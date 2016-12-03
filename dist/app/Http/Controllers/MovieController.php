@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use \Validator;
 
 class MovieController extends Controller
 {
@@ -28,6 +29,21 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the input.
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|size:50',
+            'format' => 'required|in:Blu-ray,DVD,Streaming,VHS',
+            'length' => 'required|integer|min:1|max:500',
+            'year' => 'required|integer|min:1800|max:2100',
+            'rating' => 'in:1,2,3,4,5',
+        ]);
+
+        // Return errors if invalid.
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(["errors" => $errors], 400);
+        }
+
         // Create the movie.
         $movie = new \App\Movie($request->all());
         $movie->save();
@@ -69,6 +85,21 @@ class MovieController extends Controller
         // If no resources was found.
         if (!$movie) {
             return response()->json(["data" => $movie], 404);
+        }
+
+        // Validate the input.
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|size:50',
+            'format' => 'required|in:Blu-ray,DVD,Streaming,VHS',
+            'length' => 'required|integer|min:1|max:500',
+            'year' => 'required|integer|min:1800|max:2100',
+            'rating' => 'in:1,2,3,4,5',
+        ]);
+
+        // Return errors if invalid.
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(["errors" => $errors], 400);
         }
 
         // Update the movie.
