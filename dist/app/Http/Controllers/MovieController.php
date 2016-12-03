@@ -44,7 +44,14 @@ class MovieController extends Controller
      */
     public function show($id)
     {
-        //
+        // Get the movie.
+        $movie = \App\Movie::find($id);
+
+        // Determine the status code.
+        $statusCode = $movie ? 200 : 404;
+
+        // Format the response.
+        return response()->json(["data" => $movie], $statusCode);
     }
 
     /**
