@@ -1,0 +1,41 @@
+version: '2'
+services:
+  # Application Service
+  app:
+    build: ./docker/containers/app/
+    expose:
+      - "9000"
+    volumes_from:
+     - data-web
+    user: www-data
+
+  # Database Data Volume Service
+  data-db:
+    build: ./docker/containers/data/
+    volumes:
+      - ./docker/volumes/data-db/:/var/lib/mysql
+
+  # Application Data Volume Service
+  data-web:
+    build: ./docker/containers/data/
+    volumes:
+      - ./html:/var/www/html
+
+  # Database Service
+  db:
+    image: "mysql:5.6"
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: project_local
+    volumes_from:
+      - data-db
+
+  # Web Server Service
+  web:
+    build: ./docker/containers/web/
+    ports:
+     - "8080:80"
+    volumes_from:
+     - data-web
