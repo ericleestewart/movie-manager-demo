@@ -1,15 +1,32 @@
-Application Stack
-=================
+Project
+=======
 
+This project is a simple movie collection manager. It's intended to fulfill the
+development example requirements for the Lead Software Developer position at
+SANS Institute.
+
+
+Stack
+=====
+
+Docker Services
+---------------
 Nginx 1.11
 PHP 5.6
 MySQL 5.6
 
+Application Stack
+-----------------
 
-Setup
-=====
+Laravel 5.3.26
+Bootstrap 3.3.7
+
+
+Local Environment Setup
+=======================
 
 Install docker on the host machine.
+https://www.docker.com/products/docker
 
 Boot the application inside docker.
 ```
@@ -25,8 +42,9 @@ Access the site.
 
 http://localhost:8080/
 
-Commands
-========
+
+Local Commands
+==============
 
 Create and start all containers in the stack.
 ```
