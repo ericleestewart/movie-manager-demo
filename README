@@ -1,0 +1,39 @@
+Application Stack
+=================
+
+Nginx 1.11
+PHP 5.6
+MySQL 5.6
+
+
+Setup
+=====
+
+Install docker on the host machine.
+
+
+Commands
+========
+
+# Create and start all containers in the stack.
+docker-compose up -d
+
+# Continuously display logs.
+docker-compose logs -f
+
+# Stop the containers in stack.
+docker-compose stop
+
+# Start the containers in stack.
+docker-compose start
+
+# Stop and remove the containers for the stack.
+docker-compose down
+
+
+Docker Examples
+===============
+
+https://github.com/eko/docker-symfony/blob/master/docker-compose.yml
+http://container42.com/2014/11/18/data-only-container-madness/
+https://github.com/nazar-pc/docker-php/blob/master/apache/Dockerfile
