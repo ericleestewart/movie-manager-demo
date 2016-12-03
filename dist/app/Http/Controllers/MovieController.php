@@ -8,14 +8,41 @@ use \Validator;
 class MovieController extends Controller
 {
     /**
+     * Fields which can be sorted on.
+     */
+    protected $sortableFields = [
+        'title', 'format', 'length', 'year', 'rating'
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Retrieve all the movies.
+        // Get sort and order information.
+        $sort = NULL;
+        if ($request->input('sort')) {
+            if (in_array($request->input('sort'), $this->sortableFields)) {
+                $sort = $request->input('sort');
+            }
+        }
+
+        $order = 'asc';
+        if ($request->input('order') == 'desc') {
+            $order = 'desc';
+        }
+
+        // Retrieve all the movies
         $movies = \App\Movie::all();
+
+        // Apply sorting if necessary
+        if ($sort && $order == 'asc') {
+            $movies = $movies->sortBy($sort);
+        } elseif ($sort && $order == 'desc') {
+            $movies = $movies->sortByDesc($sort);
+        }
 
         // Format the response.
         return response()->json(["data" => $movies]);
