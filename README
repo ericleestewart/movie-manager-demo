@@ -5,6 +5,10 @@ This project is a simple movie collection manager. It's intended to fulfill the
 development example requirements for the Lead Software Developer position at
 SANS Institute.
 
+The backend is a Laravel API designed as a RESTful service.
+
+The front-end is a responsive AngularJS application utilizing Bootstrap for
+styling.
 
 Stack
 =====
