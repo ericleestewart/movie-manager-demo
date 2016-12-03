@@ -11,29 +11,49 @@ Setup
 
 Install docker on the host machine.
 
+Boot the application inside docker.
+```
+docker-compose up
+```
+
+Initialize the database.
+```
+docker-compose exec app /usr/local/bin/php /var/www/artisan migrate
+```
+
+Access the site.
+
+http://localhost:8080/
 
 Commands
 ========
 
-# Create and start all containers in the stack.
+Create and start all containers in the stack.
+```
 docker-compose up -d
+```
 
-# Continuously display logs.
+Continuously display logs.
+```
 docker-compose logs -f
+```
 
-# Stop the containers in stack.
+Stop the containers in stack.
+```
 docker-compose stop
+```
 
-# Start the containers in stack.
+Start the containers in stack.
+```
 docker-compose start
+```
 
-# Stop and remove the containers for the stack.
+Stop and remove the containers for the stack.
+```
 docker-compose down
+```
 
-
-Docker Examples
-===============
-
-https://github.com/eko/docker-symfony/blob/master/docker-compose.yml
-http://container42.com/2014/11/18/data-only-container-madness/
-https://github.com/nazar-pc/docker-php/blob/master/apache/Dockerfile
+Migrate the database.
+```
+docker-compose exec app /usr/local/bin/php /var/www/artisan migrate
+```
