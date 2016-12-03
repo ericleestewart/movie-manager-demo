@@ -45,3 +45,6 @@ RUN apt-get update && apt-get install -y \
         zip
 
 COPY ./configs/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh

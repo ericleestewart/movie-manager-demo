@@ -19,7 +19,7 @@ services:
   data-web:
     build: ./docker/containers/data/
     volumes:
-      - ./html:/var/www/html
+      - ./dist:/var/www
 
   # Database Service
   db:
