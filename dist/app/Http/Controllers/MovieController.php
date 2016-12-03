@@ -13,17 +13,11 @@ class MovieController extends Controller
      */
     public function index()
     {
-        //
-    }
+        // Retrieve all the movies.
+        $movies = \App\Movie::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        // Format the response.
+        return response()->json(["data" => $movies]);
     }
 
     /**
@@ -35,6 +29,7 @@ class MovieController extends Controller
     public function store(Request $request)
     {
         //
+        
     }
 
     /**
@@ -44,17 +39,6 @@ class MovieController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }

@@ -18,5 +18,5 @@ use Illuminate\Http\Request;
 // })->middleware('auth:api');
 
 Route::resource('movie', 'MovieController', ['only' => [
-    'destroy', 'edit', 'index', 'show', 'store', 'update'
+    'destroy', 'index', 'show', 'store', 'update'
 ]]);
