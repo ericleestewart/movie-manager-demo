@@ -118,7 +118,7 @@ class MovieController extends Controller
      */
     public function destroy($id)
     {
-                // Get the movie.
+        // Get the movie.
         $movie = \App\Movie::find($id);
 
         // If no resources was found.
