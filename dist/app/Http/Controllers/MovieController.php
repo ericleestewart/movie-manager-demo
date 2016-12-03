@@ -63,7 +63,20 @@ class MovieController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Get the movie.
+        $movie = \App\Movie::find($id);
+
+        // If no resources was found.
+        if (!$movie) {
+            return response()->json(["data" => $movie], 404);
+        }
+
+        // Update the movie.
+        $movie->update($request->all());
+
+        // Format the response.
+        return response()->json(["data" => $movie]);
+
     }
 
     /**
