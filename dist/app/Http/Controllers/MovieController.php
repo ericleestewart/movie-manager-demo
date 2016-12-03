@@ -28,8 +28,12 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        
+        // Create the movie.
+        $movie = new \App\Movie($request->all());
+        $movie->save();
+
+        // Format the response.
+        return response()->json(["data" => $movie]);
     }
 
     /**
