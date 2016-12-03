@@ -33,7 +33,7 @@ class MovieController extends Controller
         $movie->save();
 
         // Format the response.
-        return response()->json(["data" => $movie]);
+        return response()->json(["data" => $movie], 201);
     }
 
     /**
@@ -87,6 +87,19 @@ class MovieController extends Controller
      */
     public function destroy($id)
     {
-        //
+                // Get the movie.
+        $movie = \App\Movie::find($id);
+
+        // If no resources was found.
+        if (!$movie) {
+            return response()->json(["data" => $movie], 404);
+        }
+
+        // Update the movie.
+        $movie->delete();
+
+        // Format the response.
+        return response()->json(["data" => $movie]);
+
     }
 }
