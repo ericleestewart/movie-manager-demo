@@ -33,6 +33,22 @@ Local Environment Setup
 Install docker on the host machine.
 https://www.docker.com/products/docker
 
+Create your local environment file dist/.env with the following contents:
+```
+APP_ENV=local
+APP_KEY=base64:HwKbKKPmEYVc3UvKWY5ZeWTiNRsou93l3Cs/e0mUE9E=
+APP_DEBUG=true
+APP_LOG_LEVEL=debug
+APP_URL=http://localhost:8080
+
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=project_local
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+
 Boot the application inside docker.
 ```
 docker-compose up
