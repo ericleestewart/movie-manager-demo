@@ -16,15 +16,15 @@ Stack
 
 Docker Services
 ---------------
-Nginx 1.11
-PHP 5.6
-MySQL 5.6
+* Nginx 1.11
+* PHP 5.6
+* MySQL 5.6
 
 Application Stack
 -----------------
 
-Laravel 5.3.26
-Bootstrap 3.3.7
+* Laravel 5.3.26
+* Bootstrap 3.3.7
 
 
 Local Environment Setup
