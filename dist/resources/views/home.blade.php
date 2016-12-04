@@ -73,6 +73,8 @@
     <script src="/modules/movie-manager/routes.js"></script>
     <!-- movie-manager - controllers -->
     <script src="/modules/movie-manager/controllers/movie-list.js"></script>
+    <!-- movie-manager - services -->
+    <script src="/modules/movie-manager/services/notifications.js"></script>
 
   </body>
 </html>
