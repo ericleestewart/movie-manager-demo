@@ -11,6 +11,12 @@
 |
 */
 
+// The application's Splash page.
 Route::get('/', function () {
     return view('splash');
+});
+
+// The applications Home page.
+Route::get('/home', function () {
+    return view('home');
 });
