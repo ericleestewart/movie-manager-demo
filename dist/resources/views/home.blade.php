@@ -30,13 +30,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Movie Manager</a>
+          <a class="navbar-brand" href="/home#/">Movie Manager</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li><a href="/">Splash</a></li>
-            <li><a href="/home">Home</a></li>
+            <li><a href="/home#/">Movie List</a></li>
           </ul>
         </div>
 
