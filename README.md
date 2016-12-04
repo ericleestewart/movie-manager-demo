@@ -25,6 +25,8 @@ Application Stack
 
 * Laravel 5.3.26
 * Bootstrap 3.3.7
+* Angular 1.5.9
+* Angular-Route 1.5.9
 
 
 Local Environment Setup
