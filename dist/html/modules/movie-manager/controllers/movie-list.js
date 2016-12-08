@@ -18,7 +18,13 @@ angular.module('MovieManager')
     
     // Respond to GetMovieCollectionSuccess events.
     $scope.$on('GetMovieCollectionSuccess', function(event, data) {
+      // Set the movies.
       vm.movies = data;
+      
+      // Update the calculated properties.
+      for (var i = vm.movies.length - 1; i >= 0; i--) {
+          updateCalculatedProperties(vm.movies[i])
+      }
     });
 
     // Respond to GetMovieCollectionFailed events.
@@ -43,6 +49,24 @@ angular.module('MovieManager')
 	    }
 	  );
     };
+
+    // Update calculated properties.
+    var updateCalculatedProperties = function(movie) {
+      // Calculate the runtime in hours and minutes.
+      var runtimeHours = 0;
+      var runtimeMinutes = 0;
+      
+      if (movie.runtime == 0) {
+        runtimeHours = 0;
+        runtimeMinutes = 0;
+      } else {
+        runtimeHours = Math.floor(movie.runtime / 60);
+        runtimeMinutes = movie.runtime - (runtimeHours * 60);
+      }
+
+      movie.runtimeHours = runtimeHours;
+      movie.runtimeMinutes = runtimeMinutes;
+    }
 
     // Show notifications if present.
     var showNotifications = function() {
