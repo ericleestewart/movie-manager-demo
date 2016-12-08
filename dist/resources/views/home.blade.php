@@ -78,6 +78,7 @@
     <!-- movie-manager - controllers -->
     <script src="/modules/movie-manager/controllers/movie-create.js"></script>
     <script src="/modules/movie-manager/controllers/movie-list.js"></script>
+    <script src="/modules/movie-manager/controllers/movie-update.js"></script>
     <!-- movie-manager - services -->
     <script src="/modules/movie-manager/services/notifications.js"></script>
 

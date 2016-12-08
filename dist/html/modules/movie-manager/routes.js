@@ -21,5 +21,10 @@ angular.module('MovieManager')
       templateUrl : '/modules/movie-manager/templates/movie-create.html'
     });
 
+    $routeProvider.when('/movie/update/:id', {
+      controller : 'MovieUpdateCtrl',
+      controllerAs : 'ctrl',
+      templateUrl : '/modules/movie-manager/templates/movie-update.html'
+    });
 
   }]);

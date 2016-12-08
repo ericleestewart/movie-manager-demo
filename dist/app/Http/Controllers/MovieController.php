@@ -126,7 +126,7 @@ class MovieController extends Controller
 
         // Validate the input.
         $validator = Validator::make($request->all(), [
-            'title' => 'required|size:50',
+            'title' => 'required|max:50',
             'format' => 'required|in:Blu-ray,DVD,Streaming,VHS',
             'runtime' => 'required|integer|min:1|max:500',
             'year' => 'required|integer|min:1800|max:2100',

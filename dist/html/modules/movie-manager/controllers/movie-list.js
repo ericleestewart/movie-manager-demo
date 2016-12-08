@@ -34,20 +34,20 @@ angular.module('MovieManager')
 
     // Trigger a fetch of all movies.
     vm.getMoviesList = function () {
-	  $http.get('/api/movie').then(
-	    // Successful GET
-	    function (response) {
-	      $scope.$emit('GetMovieCollectionSuccess', response.data.data);
-	  	},
-	    // Failed GET
-	    function (response) {
-		  $scope.$emit('GetMovieCollectionFailed', {
-		  	data: response.data,
-		  	status: response.status,
-		  	statusText: response.statusText
-		  });
-	    }
-	  );
+  	  $http.get('/api/movie').then(
+  	    // Successful GET
+  	    function (response) {
+  	      $scope.$emit('GetMovieCollectionSuccess', response.data.data);
+  	  	},
+  	    // Failed GET
+  	    function (response) {
+  		  $scope.$emit('GetMovieCollectionFailed', {
+  		  	data: response.data,
+  		  	status: response.status,
+  		  	statusText: response.statusText
+  		  });
+  	    }
+  	  );
     };
 
     // Update calculated properties.
