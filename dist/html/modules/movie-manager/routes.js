@@ -27,4 +27,10 @@ angular.module('MovieManager')
       templateUrl : '/modules/movie-manager/templates/movie-update.html'
     });
 
+    $routeProvider.when('/movie/delete/:id', {
+      controller : 'MovieDeleteCtrl',
+      controllerAs : 'ctrl',
+      templateUrl : '/modules/movie-manager/templates/movie-delete.html'
+    });
+
   }]);
