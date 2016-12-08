@@ -63,15 +63,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/modules/bootstrap/js/bootstrap.min.js"></script>
+    <!-- bootstrap-notify 3.1.3 -->
+    <script src="/modules/bootstrap-notify/bootstrap-notify.min.js"></script>
     <!-- angular 1.5.9 -->
     <script src="/modules/angular/angular.min.js"></script>
     <!-- angular-route 1.5.9 -->
     <script src="/modules/angular-route/angular-route.min.js"></script>
+    <!-- angular-messages 1.5.9 -->
+    <script src="/modules/angular-messages/angular-messages.min.js"></script>
     <!-- movie-manager - application -->
     <script src="/modules/movie-manager/app.js"></script>
     <!-- movie-manager - routes -->
     <script src="/modules/movie-manager/routes.js"></script>
     <!-- movie-manager - controllers -->
+    <script src="/modules/movie-manager/controllers/movie-create.js"></script>
     <script src="/modules/movie-manager/controllers/movie-list.js"></script>
     <!-- movie-manager - services -->
     <script src="/modules/movie-manager/services/notifications.js"></script>

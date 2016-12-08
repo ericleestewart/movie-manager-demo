@@ -2,7 +2,7 @@
 // * APPLICATION - MOVIE MANAGER
 // *************************************************************************
 
-angular.module('MovieManager', ['ngRoute'])
+angular.module('MovieManager', ['ngMessages', 'ngRoute'])
 
   // *************************************************************************
   // * CONSTANTS

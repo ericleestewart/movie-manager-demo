@@ -44,6 +44,28 @@ angular.module('MovieManager')
 	  );
     };
 
+    // Show notifications if present.
+    var showNotifications = function() {
+      if (notifications.length > 0) {
+        for (var i = notifications.length - 1; i >= 0; i--) {
+          $.notify({
+            // options
+            message: notifications[i].text
+          },{
+            // settings
+            type: notifications[i].type,
+            placement: {
+              from: "top",
+              align: "center"
+            }
+          });
+        }
+      }
+    }
+
     // Run on controller initialization.
     vm.getMoviesList();
+
+    // Show any notifications.
+    showNotifications();
   }]);

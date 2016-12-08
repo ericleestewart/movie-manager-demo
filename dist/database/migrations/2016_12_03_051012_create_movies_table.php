@@ -18,7 +18,7 @@ class CreateMoviesTable extends Migration
             $table->timestamps();
             $table->string('title', 50);
             $table->enum('format', ['Blu-ray', 'DVD', 'Streaming', 'VHS']);
-            $table->integer('length');
+            $table->integer('runtime');
             $table->integer('year');
             $table->enum('rating', ['1', '2', '3', '4', '5'])->nullable();
         });

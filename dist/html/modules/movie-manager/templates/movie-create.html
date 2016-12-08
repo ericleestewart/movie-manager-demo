@@ -1,0 +1,70 @@
+<div class="container-fluid">
+  <div class="row">
+	<div class="col-md-3 col-sm-12">
+	  <div class="well">
+      	<h3>Create Movie</h3>
+      	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed ultricies ligula. Nullam lacus justo, pretium quis mollis egestas, posuere at nunc. In ac lacinia purus, vitae tempus enim. Maecenas dui ante, congue ac mauris vel, scelerisque aliquam massa. Etiam consectetur lorem a varius euismod.</p>
+      </div>
+	</div>
+	<div class="col-md-9 col-sm-12">
+	  <form name="createMovieForm" novalidate>
+	  	<div class="form-group" ng-class="{ 'has-error' : createMovieForm.title.$invalid && createMovieForm.title.$touched }">
+	  	  <label for="inputTitle">Title</label>
+	  	  <input type="text" class="form-control" id="inputTitle" name="title" placeholder="Title" ng-model="ctrl.movie.title" ng-change="ctrl.changeInput('title')" ng-maxlength="50" ng-minlength="1" required>
+	  	  <div class="help-block" ng-messages="createMovieForm.title.$error" ng-if="createMovieForm.title.$touched">
+            <p ng-message="minlength">This field's minimum length is 1 character.</p>
+            <p ng-message="maxlength">This field's maximum length is 50 characters.</p>
+            <p ng-message="required">This field is required.</p>
+            <p ng-message="server">{{ createMovieForm.title.serverError }}</p>
+	  	  </div>
+	  	</div>
+	  	<div class="form-group" ng-class="{ 'has-error' : createMovieForm.year.$invalid && createMovieForm.year.$touched }">
+	  	  <label for="inputYear">Year</label>
+	  	  <input type="text" class="form-control" id="inputYear" name="year" placeholder="Year" ng-model="ctrl.movie.year" ng-change="ctrl.changeInput('year')" ng-pattern="/^[0-9]{4}$/" required>
+	  	  <div class="help-block" ng-messages="createMovieForm.year.$error" ng-if="createMovieForm.year.$touched">
+            <p ng-message="required">This field is required.</p>
+            <p ng-message="pattern">Must be a valid year between 1800 and 2100.</p>
+            <p ng-message="server">{{ createMovieForm.year.serverError }}</p>
+	  	  </div>
+	  	</div>
+	  	<div class="form-group" ng-class="{ 'has-error' : createMovieForm.runtime.$invalid && createMovieForm.runtime.$touched }">
+	  	  <label for="inputLength">Length in Minutes</label>
+	  	  <input type="text" class="form-control" id="inputLength" name="runtime" placeholder="Length in Minutes" ng-model="ctrl.movie.runtime" ng-change="ctrl.changeInput('runtime')" ng-pattern="/^[0-9]{1,4}$/" required>
+	  	  <div class="help-block" ng-messages="createMovieForm.runtime.$error" ng-if="createMovieForm.runtime.$touched">
+            <p ng-message="required">This field is required.</p>
+            <p ng-message="pattern">Must be a runtime in minutes. Example: 120</p>
+            <p ng-message="server">{{ createMovieForm.runtime.serverError }}</p>
+	  	  </div>
+	  	</div>
+	  	<div class="form-group" ng-class="{ 'has-error' : createMovieForm.format.$invalid && createMovieForm.format.$touched }">
+	  	  <label for="format">Format</label>
+	  	  <select name="format" id="selectFormat" class="form-control" ng-model="ctrl.movie.format" ng-change="ctrl.changeInput('format')" required>
+	  	  	<option>Blu-ray</option>
+	  	  	<option>DVD</option>
+	  	  	<option>Streaming</option>
+	  	  	<option>VHS</option>
+	  	  </select>
+	  	  <div class="help-block" ng-messages="createMovieForm.format.$error" ng-if="createMovieForm.format.$touched">
+            <p ng-message="required">This field is required.</p>
+            <p ng-message="server">{{ createMovieForm.format.serverError }}</p>
+	  	  </div>
+	  	</div>
+	  	<div class="form-group" ng-class="{ 'has-error' : createMovieForm.rating.$invalid && createMovieForm.rating.$touched }">
+	  	  <label for="rating">Rating</label>
+	  	  <select name="rating" id="selectRating" class="form-control" ng-model="ctrl.movie.rating" ng-change="ctrl.changeInput('format')">
+	  	  	<option>5</option>
+	  	  	<option>4</option>
+	  	  	<option>3</option>
+	  	  	<option>2</option>
+	  	  	<option>1</option>
+	  	  </select>
+	  	  <div class="help-block" ng-messages="createMovieForm.rating.$error" ng-if="createMovieForm.rating.$touched">
+            <p ng-message="server">{{ createMovieForm.rating.serverError }}</p>
+	  	  </div>
+	  	</div>
+
+	  	<button type="submit" class="btn btn-default" ng-click="ctrl.createMovie(createMovieForm.$valid)">Save</button>
+	  </form>	
+	</div>
+  </div>
+</div>

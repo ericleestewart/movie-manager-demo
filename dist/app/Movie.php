@@ -11,5 +11,5 @@ class Movie extends Model
      *
      * @var array
      */
-    protected $fillable = ['title', 'format', 'length', 'year', 'rating'];
+    protected $fillable = ['title', 'format', 'runtime', 'year', 'rating'];
 }

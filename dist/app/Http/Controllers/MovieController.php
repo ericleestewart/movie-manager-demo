@@ -11,7 +11,7 @@ class MovieController extends Controller
      * Fields which can be sorted on.
      */
     protected $sortableFields = [
-        'title', 'format', 'length', 'year', 'rating'
+        'title', 'format', 'runtime', 'year', 'rating'
     ];
 
     /**
@@ -60,15 +60,25 @@ class MovieController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|max:50',
             'format' => 'required|in:Blu-ray,DVD,Streaming,VHS',
-            'length' => 'required|integer|min:1|max:500',
+            'runtime' => 'required|integer|min:1|max:500',
             'year' => 'required|integer|min:1800|max:2100',
             'rating' => 'in:1,2,3,4,5',
         ]);
 
         // Return errors if invalid.
         if ($validator->fails()) {
-            $errors = $validator->errors()->all();
-            return response()->json(["errors" => $errors], 400);
+            // Get the errors from the validator.
+            $errors = $validator->errors();
+            $separatedErrors = [];
+
+            // Separate the errors by field.
+            foreach (['title', 'format', 'runtime', 'year', 'rating'] as $value) {
+                if ($errors->has($value)) {
+                    $separatedErrors[$value] = $errors->first($value);
+                }
+            }
+
+            return response()->json(["errors" => $separatedErrors], 400);
         }
 
         // Create the movie.
@@ -118,15 +128,25 @@ class MovieController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|size:50',
             'format' => 'required|in:Blu-ray,DVD,Streaming,VHS',
-            'length' => 'required|integer|min:1|max:500',
+            'runtime' => 'required|integer|min:1|max:500',
             'year' => 'required|integer|min:1800|max:2100',
             'rating' => 'in:1,2,3,4,5',
         ]);
 
         // Return errors if invalid.
         if ($validator->fails()) {
-            $errors = $validator->errors()->all();
-            return response()->json(["errors" => $errors], 400);
+            // Get the errors from the validator.
+            $errors = $validator->errors();
+            $separatedErrors = [];
+
+            // Separate the errors by field.
+            foreach (['title', 'format', 'runtime', 'year', 'rating'] as $value) {
+                if ($errors->has($value)) {
+                    $separatedErrors[$value] = $errors->first($value);
+                }
+            }
+            
+            return response()->json(["errors" => $separatedErrors], 400);
         }
 
         // Update the movie.
