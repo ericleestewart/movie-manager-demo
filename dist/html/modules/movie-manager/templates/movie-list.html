@@ -12,11 +12,31 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Length</th>
-            <th>Format</th>
-            <th>Rating</th>
+            <th class="sortable" ng-click="ctrl.toggleListSort('title')">
+              Title
+              <span class="glyphicon glyphicon-sort-by-attributes pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'title' && ctrl.listSortDirection == 'asc'"></span>
+              <span class="glyphicon glyphicon-sort-by-attributes-alt pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'title' && ctrl.listSortDirection == 'desc'"></span>
+            </th>
+            <th class="sortable" ng-click="ctrl.toggleListSort('year')">
+              Year
+              <span class="glyphicon glyphicon-sort-by-attributes pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'year' && ctrl.listSortDirection == 'asc'"></span>
+              <span class="glyphicon glyphicon-sort-by-attributes-alt pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'year' && ctrl.listSortDirection == 'desc'"></span>
+            </th>
+            <th class="sortable" ng-click="ctrl.toggleListSort('runtime')">
+              Length
+              <span class="glyphicon glyphicon-sort-by-attributes pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'runtime' && ctrl.listSortDirection == 'asc'"></span>
+              <span class="glyphicon glyphicon-sort-by-attributes-alt pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'runtime' && ctrl.listSortDirection == 'desc'"></span>
+            </th>
+            <th class="sortable" ng-click="ctrl.toggleListSort('format')">
+              Format
+              <span class="glyphicon glyphicon-sort-by-attributes pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'format' && ctrl.listSortDirection == 'asc'"></span>
+              <span class="glyphicon glyphicon-sort-by-attributes-alt pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'format' && ctrl.listSortDirection == 'desc'"></span>
+            </th>
+            <th class="sortable" ng-click="ctrl.toggleListSort('rating')">
+              Rating
+              <span class="glyphicon glyphicon-sort-by-attributes pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'rating' && ctrl.listSortDirection == 'asc'"></span>
+              <span class="glyphicon glyphicon-sort-by-attributes-alt pull-right" aria-hidden="true" ng-show="ctrl.listSortBy == 'rating' && ctrl.listSortDirection == 'desc'"></span>
+            </th>
           </tr>
         </thead>
         <tbody>

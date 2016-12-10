@@ -45,7 +45,11 @@ class MovieController extends Controller
         }
 
         // Format the response.
-        return response()->json(["data" => $movies]);
+        $movieList = [];
+        foreach ($movies as $movie) {
+            $movieList[] = $movie;
+        }
+        return response()->json(["data" => $movieList]);
     }
 
     /**

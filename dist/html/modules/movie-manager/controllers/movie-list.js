@@ -12,19 +12,27 @@ angular.module('MovieManager')
     // Movies model.
     vm.movies = [];
 
+    // Sort list by field.
+    vm.listSortBy = 'title';
+
+    // Sort list direction. Can be 'asc' or 'desc'
+    vm.listSortDirection = 'asc';
+
     // Fetch any notifications then clear them.
     var notifications = $rootScope.notifications.all();
     $rootScope.notifications.clear();
     
     // Respond to GetMovieCollectionSuccess events.
     $scope.$on('GetMovieCollectionSuccess', function(event, data) {
-      // Set the movies.
-      vm.movies = data;
-      
+      var movies = data;
+
       // Update the calculated properties.
-      for (var i = vm.movies.length - 1; i >= 0; i--) {
-          updateCalculatedProperties(vm.movies[i])
+      for (var i = movies.length - 1; i >= 0; i--) {
+          updateCalculatedProperties(movies[i])
       }
+
+      // Set the movies.
+      vm.movies = movies;
     });
 
     // Respond to GetMovieCollectionFailed events.
@@ -34,18 +42,20 @@ angular.module('MovieManager')
 
     // Trigger a fetch of all movies.
     vm.getMoviesList = function () {
-  	  $http.get('/api/movie').then(
+      config = {params: {sort: vm.listSortBy, order: vm.listSortDirection}};
+  	  $http.get('/api/movie', config).then(
   	    // Successful GET
   	    function (response) {
+          console.log(response);
   	      $scope.$emit('GetMovieCollectionSuccess', response.data.data);
   	  	},
   	    // Failed GET
   	    function (response) {
-  		  $scope.$emit('GetMovieCollectionFailed', {
-  		  	data: response.data,
-  		  	status: response.status,
-  		  	statusText: response.statusText
-  		  });
+  		    $scope.$emit('GetMovieCollectionFailed', {
+  		  	  data: response.data,
+  		  	  status: response.status,
+  		  	  statusText: response.statusText
+  		    });
   	    }
   	  );
     };
@@ -85,6 +95,20 @@ angular.module('MovieManager')
           });
         }
       }
+    }
+
+    // Sort the list by the field selected.
+    vm.toggleListSort = function(field) {
+      // Determine the field and direction to sort by.
+      if (vm.listSortBy == field && vm.listSortDirection == 'asc') {
+        vm.listSortDirection = 'desc';
+      } else {
+        vm.listSortBy = field;
+        vm.listSortDirection = 'asc';
+      }
+
+      // Fetch the list
+      vm.getMoviesList();
     }
 
     // Run on controller initialization.
