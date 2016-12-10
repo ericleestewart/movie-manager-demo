@@ -46,7 +46,6 @@ angular.module('MovieManager')
   	  $http.get('/api/movie', config).then(
   	    // Successful GET
   	    function (response) {
-          console.log(response);
   	      $scope.$emit('GetMovieCollectionSuccess', response.data.data);
   	  	},
   	    // Failed GET
