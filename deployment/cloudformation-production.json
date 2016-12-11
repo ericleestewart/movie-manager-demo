@@ -1,0 +1,707 @@
+{
+  "Description": "A single environment VPC with a public and private subnet. Preconfigured for web servers and MySQL database servers.",
+
+  "Parameters": {
+    "Project": {
+      "Description": "The project this stack is associated with.",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "30",
+      "AllowedPattern": "[a-z0-9]*",
+      "Default": "sans16001",
+      "ConstraintDescription": "Example: sans16001. Only lower case characters and numbers are allowed."
+    },
+
+    "Environment": {
+      "Description": "The environment type to build: production, staging or development.",
+      "Type": "String",
+      "AllowedValues": [ "production", "staging", "development" ],
+      "Default": "production",
+      "ConstraintDescription": "Select One: production, staging or development."
+    },
+
+    "RDSInstanceType": {
+      "Description": "The RDS instance type.",
+      "Type": "String",
+      "AllowedValues": [
+        "db.t2.micro", "db.t2.small", "db.t2.medium", "db.t2.large",
+        "db.m3.medium", "db.m4.large", "db.m4.xlarge", "db.m4.2xlarge", "db.m4.4xlarge", "db.m4.10xlarge",
+        "db.r3.large", "db.r3.xlarge", "db.r3.2xlarge", "db.r3.4xlarge", "db.r3.8xlarge"
+      ],
+      "ConstraintDescription": "Must be a valid instance type.",
+      "Default": "db.t2.micro"
+    },
+
+    "RDSEngineVersion": {
+      "Description": "The RDS engine version.",
+      "Type": "String",
+      "AllowedValues": [ "5.5", "5.6", "5.7" ],
+      "ConstraintDescription": "Must be a valid engine version. 5.x for MySQL and 10.x for MariaDB.",
+      "Default": "5.7"
+    },
+
+    "RDSMultiAZ": {
+      "Description": "The RDS Multi-AZ?",
+      "Type": "String",
+      "AllowedValues": [ "true", "false" ],
+      "ConstraintDescription": "Is the instance Multi-AZ?",
+      "Default": "false"
+    },
+
+    "RDSStorageType": {
+      "Description": "The RDS storage type.",
+      "Type": "String",
+      "AllowedValues": [ "gp2", "io1", "standard" ],
+      "ConstraintDescription": "SSD = gp2, High IOPS = io1, Magnetic = standard",
+      "Default": "gp2"
+    },
+
+    "RDSAllocatedStorage": {
+      "Description": "The amount of storage space (in GBs) for the database.",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "10",
+      "AllowedPattern": "[0-9]*",
+      "ConstraintDescription": "Must be whole integers."
+    },
+
+    "RDSDBMasterUsername": {
+      "Description": "The database master username.",
+      "Type": "String",
+      "MinLength": "3",
+      "MaxLength": "40",
+      "AllowedPattern" : "[a-zA-Z0-9_]*",
+      "ConstraintDescription": "Only use alphanumeric characters and underscores.",
+      "Default": "root"
+    },
+
+    "RDSDBPassword": {
+      "NoEcho": "true",
+      "Description": "The database root password",
+      "Type": "String",
+      "MinLength": "12",
+      "MaxLength": "41",
+      "AllowedPattern": "[a-zA-Z0-9\\-]*",
+      "ConstraintDescription": "Must contain only alphanumeric characters and dashes."
+    }
+
+  },
+
+  "Mappings": {
+
+    "NetworkAddresses": {
+      "Everyone": { "CIDR" : "0.0.0.0/0" },
+      "VPC": { "CIDR": "10.0.0.0/16" },
+      "PublicZoneC": { "CIDR": "10.0.0.0/24" },
+      "PublicZoneD": { "CIDR": "10.0.1.0/24" },
+      "PrivateZoneC": { "CIDR": "10.0.10.0/24" },
+      "PrivateZoneD": { "CIDR": "10.0.11.0/24" },
+      "AdminEricStewart": { "CIDR": "50.150.46.163/32" }
+    },
+
+    "NetworkPorts": {
+      "EphemeralMin": { "Port": "1024" },
+      "EphemeralMax": { "Port": "65535" },
+      "HTTP": { "Port": "80" },
+      "HTTPS": { "Port": "443" },
+      "MySQL": { "Port": "3306" },
+      "NTP": { "Port": "123" },
+      "SSH": { "Port": "22" }
+    }
+
+  },
+
+  "Resources": {
+
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "VPC", "CIDR" ] },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PublicSubnetZoneC": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+      "AvailabilityZone": "us-east-1c",
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZoneC", "CIDR" ] },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref" : "Project" }, "public-subnet-zone-c"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Public" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Zone", "Value": "C" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PublicSubnetZoneD": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZoneD", "CIDR" ] },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "public-subnet-zone-d"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Public" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Zone", "Value": "D" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PrivateSubnetZoneC": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-east-1c",
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZoneC", "CIDR" ] },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-c"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Private" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Zone", "Value": "C" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PrivateSubnetZoneD": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZoneD", "CIDR" ] },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-d"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Private" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Zone", "Value": "D" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          { "Key": "Name", "Value": { "Ref": "Project" } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Public" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "GatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": { "Ref" : "VPC" },
+        "InternetGatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "public"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Public" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Network", "Value": "Private" },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "GatewayAttachment",
+      "Properties": {
+        "RouteTableId": { "Ref": "PublicRouteTable" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+
+    "PublicSubnetZoneCRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PublicSubnetZoneC" },
+        "RouteTableId": { "Ref": "PublicRouteTable" }
+      }
+    },
+
+    "PublicSubnetZoneDRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PublicSubnetZoneD" },
+        "RouteTableId": { "Ref": "PublicRouteTable" }
+      }
+    },
+
+    "PrivateSubnetZoneCRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PrivateSubnetZoneC" },
+        "RouteTableId": { "Ref": "PrivateRouteTable" }
+      }
+    },
+
+    "PrivateSubnetZoneDRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref" : "PrivateSubnetZoneD" },
+        "RouteTableId": { "Ref" : "PrivateRouteTable" }
+      }
+    },
+
+    "WebServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable access for web servers.",
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "web-server"] ] } },
+          { "Key": "Project", "Value" : { "Ref": "Project" } },
+          { "Key": "Environment", "Value" : { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "MySQLSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable access for MySQL servers.",
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "mysql-server"] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "LoadBalancerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable access for load balancers.",
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "load-balancer"] ] } },
+          { "Key": "Project", "Value" : { "Ref": "Project" } },
+          { "Key": "Environment", "Value" : { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "InboundRuleMySQLSecurityGroupMySQL": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "MySQL", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "MySQL", "Port" ] },
+        "SourceSecurityGroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] },
+        "GroupId": { "Fn::GetAtt": [ "MySQLSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleWebSecurityGroupSSHAdmin1": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "SSH", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "SSH", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "AdminEricStewart", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleWebSecurityGroupHTTP": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleWebSecurityGroupHTTPS": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleWebSecurityGroupEphemeral": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "EphemeralMin", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "EphemeralMax", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleLoadBalancerGroupHTTP": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "InboundRuleLoadBalancerGroupHTTPS": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleWebSecurityGroupSSH": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties":{
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "SSH", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "SSH", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+       }
+    },
+
+    "OutboundRuleWebSecurityGroupMySQL": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties":{
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "MySQL", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "MySQL", "Port" ] },
+        "DestinationSecurityGroupId": { "Fn::GetAtt": [ "MySQLSecurityGroup", "GroupId" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+       }
+    },
+
+    "OutboundRuleWebSecurityGroupNTP": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "udp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "NTP", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "NTP", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleWebSecurityGroupHTTP": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleWebSecurityGroupHTTPS": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleWebSecurityGroupEphemeral": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "EphemeralMin", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "EphemeralMax", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleLoadBalancerGroupHTTP": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "OutboundRuleLoadBalancerGroupHTTPS": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "FromPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "ToPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTPS", "Port" ] },
+        "CidrIp": { "Fn::FindInMap" : [ "NetworkAddresses", "Everyone", "CIDR" ] },
+        "GroupId": { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] }
+      }
+    },
+
+    "MySQLDBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "MySQL DB Subnets",
+        "SubnetIds": [ 
+          { "Ref": "PrivateSubnetZoneC" },
+          { "Ref": "PrivateSubnetZoneD" }
+        ],
+        "Tags": [
+          { "Key": "Name", "Value": { "Ref": "Project" } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Network" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      }
+    },
+
+    "RDS": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": { "Ref": "RDSAllocatedStorage" },
+        "AllowMajorVersionUpgrade": "true",
+        "AutoMinorVersionUpgrade": "true",
+        "BackupRetentionPeriod": "14",
+        "DBInstanceClass": { "Ref": "RDSInstanceType" },
+        "DBInstanceIdentifier": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
+        "DBName": { "Fn::Join": ["_", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
+        "DBSubnetGroupName": { "Ref": "MySQLDBSubnetGroup" },
+        "Engine": "MySQL",
+        "EngineVersion": { "Ref": "RDSEngineVersion" },
+        "MasterUsername": { "Ref": "RDSDBMasterUsername" },
+        "MasterUserPassword": { "Ref" : "RDSDBPassword" },
+        "MultiAZ": { "Ref": "RDSMultiAZ" },
+        "Port": { "Fn::FindInMap": [ "NetworkPorts", "MySQL", "Port" ] },
+        "PubliclyAccessible": "false",
+        "StorageType": { "Ref": "RDSStorageType" },
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Database" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ],
+        "VPCSecurityGroups": [ { "Fn::GetAtt": [ "MySQLSecurityGroup", "GroupId" ] } ]
+      },
+      "DependsOn": "VPC"
+    },
+
+    "ELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "ConnectionDrainingPolicy": {
+          "Enabled": "true",
+          "Timeout": 3600
+        },
+        "ConnectionSettings": {
+          "IdleTimeout": 60
+        },
+        "CrossZone": "true",
+        "HealthCheck": {
+          "HealthyThreshold": "10",
+          "Interval": "30",
+          "Target": "HTTP:80/",
+          "Timeout": "5",
+          "UnhealthyThreshold": "2"
+        },
+        "Listeners": [ {
+          "InstancePort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+          "InstanceProtocol": "HTTP",
+          "LoadBalancerPort": { "Fn::FindInMap": [ "NetworkPorts", "HTTP", "Port" ] },
+          "Protocol": "HTTP"
+        } ],
+        "LoadBalancerName": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
+        "Scheme": "internet-facing",
+        "SecurityGroups": [ { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] } ],
+        "Subnets": [ { "Ref": "PublicSubnetZoneC" }, { "Ref": "PublicSubnetZoneD" } ],
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] } },
+          { "Key": "Project", "Value": { "Ref": "Project" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "Layer", "Value": "Web" },
+          { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
+        ]
+      },
+      "DependsOn": "VPC"
+    },
+
+    "OpsWorksStack": {
+      "Type": "AWS::OpsWorks::Stack",
+      "Properties": {
+        "ConfigurationManager": {
+          "Name": "Chef",
+          "Version": "12"
+        },
+        "CustomCookbooksSource": {
+          "Type": "git",
+          "Url": "git@bitbucket.org:ericleestewart/opsworks-orchestration.git"
+        },
+        "DefaultAvailabilityZone": "us-east-1c",
+        "DefaultInstanceProfileArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:iam::",
+              { "Ref": "AWS::AccountId" },
+              ":instance-profile/",
+              "aws-opsworks-ec2-role"
+            ]
+          ]
+        },
+        "DefaultRootDeviceType": "ebs",
+        "DefaultSshKeyName": "els-aws",
+        "DefaultSubnetId": { "Ref" : "PublicSubnetZoneC" },
+        "HostnameTheme": "Layer_Dependent",
+        "Name": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
+        "ServiceRoleArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:iam::",
+              { "Ref": "AWS::AccountId" },
+              ":role/",
+              "aws-opsworks-service-role"
+            ]
+          ]
+        },
+        "UseCustomCookbooks": "true",
+        "UseOpsworksSecurityGroups": "false",
+        "VpcId": { "Ref" : "VPC" }
+      },
+      "DependsOn": "VPC"
+    }
+
+  },
+
+  "Outputs": {
+    "OpsWorksStackId": {
+      "Description": "OpsWorks Stack Id",
+      "Value":  { "Ref" : "OpsWorksStack" }
+    },
+    "VPCId": {
+      "Description": "VPC Id",
+      "Value":  { "Ref" : "VPC" }
+    },
+    "Project": {
+      "Description": "Project Id",
+      "Value":  { "Ref" : "Project" }
+    },
+    "Environment": {
+      "Description": "Environment",
+      "Value":  { "Ref" : "Environment" }
+    },
+    "ELBDNSName": {
+      "Description": "ELB DNS Name",
+      "Value":  { "Fn::GetAtt" : [ "ELB" , "DNSName" ] }
+    },
+    "RDSInstance": {
+      "Description": "RDS Id",
+      "Value":  { "Ref" : "RDS" }
+    },
+    "RDSMultiAZ": {
+      "Description": "RDS Multi-AZ",
+      "Value": { "Ref": "RDSMultiAZ" }
+    },
+    "RDSEngine": {
+      "Description": "RDS Engine",
+      "Value": "MySQL"
+    },
+    "RDSEngineVersion": {
+      "Description": "RDS Engine Version",
+      "Value": { "Ref": "RDSEngineVersion" }
+    },
+    "RDSStorageType" : {
+      "Description": "RDS Storage Type",
+      "Value": { "Ref": "RDSStorageType" }
+    },
+    "RDSAllocatedStorage": {
+      "Description": "RDS Allocated Storage",
+      "Value": { "Fn::Join": ["", [ { "Ref": "RDSAllocatedStorage" }, "GB" ] ] }
+    },
+    "RDSDBMasterUsername": {
+      "Description": "RDS Master Username",
+      "Value":  { "Ref" : "RDSDBMasterUsername" }
+    },
+    "RDSDBName": {
+      "Description": "RDS Database Name",
+      "Value":  { "Fn::Join": ["_", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] }
+    },
+    "RDSEndpoint": {
+      "Description": "RDS Endpoint",
+      "Value":  { "Fn::GetAtt" : [ "RDS" , "Endpoint.Address" ] }
+    },
+    "RDSPort": {
+      "Description": "RDS Port",
+      "Value":  { "Fn::GetAtt" : [ "RDS" , "Endpoint.Port" ] }
+    }
+
+  }
+}
