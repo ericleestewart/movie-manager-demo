@@ -46,11 +46,11 @@ Parameter Environment: production
 
 Parameter Project: sans16001
 
-Parameter RDSAllocatedStorage (in GB): 2
+Parameter RDSAllocatedStorage (in GB): 5
 
 Parameter RDSDBMasterUsername: root
 
-Parameter RDSDBPassword: 
+Parameter RDSDBPassword: xxxx-xxxx-xxxx-xxxxx
 
 Parameter RDSEngineVersion: 10.1 or 5.7
 
@@ -71,20 +71,6 @@ Advanced Rollback on failure: Yes
 Advanced Stack Policy: None
 
 
-RDS Credential Template
-=======================
-
-Use this template to store the RDS Credentials.
-
-Title: sans16001 RDS
-Project: sans16001 Movie Manager
-Master Username: root
-Master Password: 
-Endpoint: 
-DB Name: 
-Engine Type: 
-
-
 OpsWorks Stack
 ==============
 
@@ -99,7 +85,7 @@ Stack Color: Purple
 
 Chef Version: 12 (or Latest)
 
-SSH Key: Insert els-aws-rsa key.
+SSH Key: Insert els-deploy-rsa key.
 
 Branch/Revision: master
 
@@ -203,7 +189,7 @@ Add Instance
 
 Select "New" Tab.
 
-Hostname: sans16001-app-production-primary
+Hostname: sans16001-movie-manager-production-primary
 
 Size: t2.micro
 
