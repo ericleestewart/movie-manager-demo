@@ -89,13 +89,18 @@
 
   "Mappings": {
 
+    "AvailabilityZones": {
+      "Zone1": { "AZ" : "us-west-2c" },
+      "Zone2": { "AZ" : "us-west-2b" }
+    },
+
     "NetworkAddresses": {
       "Everyone": { "CIDR" : "0.0.0.0/0" },
       "VPC": { "CIDR": "10.0.0.0/16" },
-      "PublicZoneC": { "CIDR": "10.0.0.0/24" },
-      "PublicZoneD": { "CIDR": "10.0.1.0/24" },
-      "PrivateZoneC": { "CIDR": "10.0.10.0/24" },
-      "PrivateZoneD": { "CIDR": "10.0.11.0/24" },
+      "PublicZone1": { "CIDR": "10.0.0.0/24" },
+      "PublicZone2": { "CIDR": "10.0.1.0/24" },
+      "PrivateZone1": { "CIDR": "10.0.10.0/24" },
+      "PrivateZone2": { "CIDR": "10.0.11.0/24" },
       "AdminEricStewart": { "CIDR": "50.150.46.163/32" }
     },
 
@@ -129,73 +134,73 @@
       }
     },
 
-    "PublicSubnetZoneC": {
+    "PublicSubnetZone1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-      "AvailabilityZone": "us-east-1c",
+      "AvailabilityZone": { "Fn::FindInMap": [ "AvailabilityZones", "Zone1", "AZ" ] },
         "VpcId": { "Ref": "VPC" },
-        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZoneC", "CIDR" ] },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZone1", "CIDR" ] },
         "Tags": [
-          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref" : "Project" }, "public-subnet-zone-c"] ] } },
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref" : "Project" }, "public-subnet-zone-1"] ] } },
           { "Key": "Project", "Value": { "Ref": "Project" } },
           { "Key": "Environment", "Value": { "Ref": "Environment" } },
           { "Key": "Network", "Value": "Public" },
           { "Key": "Layer", "Value": "Network" },
-          { "Key": "Zone", "Value": "C" },
+          { "Key": "Zone", "Value": "1" },
           { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
         ]
       }
     },
 
-    "PublicSubnetZoneD": {
+    "PublicSubnetZone2": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "us-east-1d",
+        "AvailabilityZone": { "Fn::FindInMap": [ "AvailabilityZones", "Zone2", "AZ" ] },
         "VpcId": { "Ref": "VPC" },
-        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZoneD", "CIDR" ] },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PublicZone2", "CIDR" ] },
         "Tags": [
-          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "public-subnet-zone-d"] ] } },
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "public-subnet-zone-2"] ] } },
           { "Key": "Project", "Value": { "Ref": "Project" } },
           { "Key": "Environment", "Value": { "Ref": "Environment" } },
           { "Key": "Network", "Value": "Public" },
           { "Key": "Layer", "Value": "Network" },
-          { "Key": "Zone", "Value": "D" },
+          { "Key": "Zone", "Value": "2" },
           { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
         ]
       }
     },
 
-    "PrivateSubnetZoneC": {
+    "PrivateSubnetZone1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "us-east-1c",
+        "AvailabilityZone": { "Fn::FindInMap": [ "AvailabilityZones", "Zone1", "AZ" ] },
         "VpcId": { "Ref": "VPC" },
-        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZoneC", "CIDR" ] },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZone1", "CIDR" ] },
         "Tags": [
-          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-c"] ] } },
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-1"] ] } },
           { "Key": "Project", "Value": { "Ref": "Project" } },
           { "Key": "Environment", "Value": { "Ref": "Environment" } },
           { "Key": "Network", "Value": "Private" },
           { "Key": "Layer", "Value": "Network" },
-          { "Key": "Zone", "Value": "C" },
+          { "Key": "Zone", "Value": "1" },
           { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
         ]
       }
     },
 
-    "PrivateSubnetZoneD": {
+    "PrivateSubnetZone2": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "us-east-1d",
+        "AvailabilityZone": { "Fn::FindInMap": [ "AvailabilityZones", "Zone2", "AZ" ] },
         "VpcId": { "Ref": "VPC" },
-        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZoneD", "CIDR" ] },
+        "CidrBlock": { "Fn::FindInMap": [ "NetworkAddresses", "PrivateZone2", "CIDR" ] },
         "Tags": [
-          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-d"] ] } },
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ { "Ref": "Project" }, "private-subnet-zone-2"] ] } },
           { "Key": "Project", "Value": { "Ref": "Project" } },
           { "Key": "Environment", "Value": { "Ref": "Environment" } },
           { "Key": "Network", "Value": "Private" },
           { "Key": "Layer", "Value": "Network" },
-          { "Key": "Zone", "Value": "D" },
+          { "Key": "Zone", "Value": "2" },
           { "Key": "Orchestration", "Value": "OpsWorks Orchestration" }
         ]
       }
@@ -263,34 +268,34 @@
       }
     },
 
-    "PublicSubnetZoneCRouteTableAssociation": {
+    "PublicSubnetZone1RouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
-        "SubnetId": { "Ref": "PublicSubnetZoneC" },
+        "SubnetId": { "Ref": "PublicSubnetZone1" },
         "RouteTableId": { "Ref": "PublicRouteTable" }
       }
     },
 
-    "PublicSubnetZoneDRouteTableAssociation": {
+    "PublicSubnetZone2RouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
-        "SubnetId": { "Ref": "PublicSubnetZoneD" },
+        "SubnetId": { "Ref": "PublicSubnetZone2" },
         "RouteTableId": { "Ref": "PublicRouteTable" }
       }
     },
 
-    "PrivateSubnetZoneCRouteTableAssociation": {
+    "PrivateSubnetZone1RouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
-        "SubnetId": { "Ref": "PrivateSubnetZoneC" },
+        "SubnetId": { "Ref": "PrivateSubnetZone1" },
         "RouteTableId": { "Ref": "PrivateRouteTable" }
       }
     },
 
-    "PrivateSubnetZoneDRouteTableAssociation": {
+    "PrivateSubnetZone2RouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
-        "SubnetId": { "Ref" : "PrivateSubnetZoneD" },
+        "SubnetId": { "Ref" : "PrivateSubnetZone2" },
         "RouteTableId": { "Ref" : "PrivateRouteTable" }
       }
     },
@@ -510,8 +515,8 @@
       "Properties": {
         "DBSubnetGroupDescription": "MySQL DB Subnets",
         "SubnetIds": [ 
-          { "Ref": "PrivateSubnetZoneC" },
-          { "Ref": "PrivateSubnetZoneD" }
+          { "Ref": "PrivateSubnetZone1" },
+          { "Ref": "PrivateSubnetZone2" }
         ],
         "Tags": [
           { "Key": "Name", "Value": { "Ref": "Project" } },
@@ -581,7 +586,7 @@
         "LoadBalancerName": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
         "Scheme": "internet-facing",
         "SecurityGroups": [ { "Fn::GetAtt": [ "LoadBalancerSecurityGroup", "GroupId" ] } ],
-        "Subnets": [ { "Ref": "PublicSubnetZoneC" }, { "Ref": "PublicSubnetZoneD" } ],
+        "Subnets": [ { "Ref": "PublicSubnetZone1" }, { "Ref": "PublicSubnetZone2" } ],
         "Tags": [
           { "Key": "Name", "Value": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] } },
           { "Key": "Project", "Value": { "Ref": "Project" } },
@@ -604,7 +609,7 @@
           "Type": "git",
           "Url": "git@bitbucket.org:ericleestewart/opsworks-orchestration.git"
         },
-        "DefaultAvailabilityZone": "us-east-1c",
+        "DefaultAvailabilityZone": { "Fn::FindInMap": [ "AvailabilityZones", "Zone1", "AZ" ] },
         "DefaultInstanceProfileArn": {
           "Fn::Join": [
             "",
@@ -618,7 +623,7 @@
         },
         "DefaultRootDeviceType": "ebs",
         "DefaultSshKeyName": "els-aws",
-        "DefaultSubnetId": { "Ref" : "PublicSubnetZoneC" },
+        "DefaultSubnetId": { "Ref" : "PublicSubnetZone1" },
         "HostnameTheme": "Layer_Dependent",
         "Name": { "Fn::Join": ["-", [ { "Ref": "Project" }, { "Ref": "Environment" } ] ] },
         "ServiceRoleArn": {
